@@ -39,6 +39,12 @@ footer{max-width:980px;margin:36px auto 30px;padding:0 20px;color:var(--muted);f
 #gname{font-weight:800;font-size:16px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #timer{font-family:Bungee,Impact,sans-serif;font-size:26px;margin-left:auto;font-variant-numeric:tabular-nums}
 #tip{color:var(--muted);font-size:14px;margin:2px 0 0}
+#learn{font-size:14px;margin:4px 0 0}
+#learn a,.res a{color:var(--blue);font-weight:700}
+.res{max-width:980px;margin:34px auto 0;padding:0 20px}
+.res h2{font-family:Bungee,Impact,sans-serif;font-weight:400;font-size:21px;margin:0 0 8px}
+.res ul{margin:0;padding-left:20px;max-width:44em}
+.res li{margin:6px 0}
 #info{font-weight:700;min-height:26px;margin:8px 0 12px}
 .btn{font:800 15px Figtree,system-ui,sans-serif;background:var(--ink);color:var(--bg);border:0;border-radius:10px;padding:10px 16px;cursor:pointer;touch-action:manipulation}
 .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
@@ -134,6 +140,16 @@ input.txt{width:100%;font:800 20px Figtree,sans-serif;padding:12px;border-radius
     <p class="stat" id="stat"></p>
   </header>
   <div id="cats"></div>
+  <section class="res">
+    <h2>Train smarter</h2>
+    <ul>
+      <li><a href="https://apps.apple.com/us/app/puzzle-cluster-from-survivor/id1460284314" target="_blank" rel="noopener">Puzzle Cluster from Survivor</a> (iPhone/iPad): 22 recreated Survivor puzzles with explanation videos and clips of them on the show.</li>
+      <li><a href="https://parade.com/tv/rachel-lamont-top-5-survivor-puzzle-tips" target="_blank" rel="noopener">Survivor 47 winner Rachel LaMont's top puzzles and tips</a>, including the ball-sort puzzle she faced on her journey.</li>
+      <li><a href="https://www.youtube.com/watch?v=tfyH-yXmbHw" target="_blank" rel="noopener">How to build a memory palace</a> (video by a two-time world memory champion). The core skill behind Big Brother memory comps.</li>
+      <li><a href="https://artofmemory.com/blog/how-to-build-a-memory-palace/" target="_blank" rel="noopener">Art of Memory: memory palace written guide</a></li>
+    </ul>
+    <p style="color:var(--muted);font-size:14px">Each comp also has its own how-to links on its play screen.</p>
+  </section>
   <footer>Times are saved in this browser only. <button class="linkbtn" id="resetAll">Reset all best times</button></footer>
 </main>
 
@@ -144,6 +160,7 @@ input.txt{width:100%;font:800 20px Figtree,sans-serif;padding:12px;border-radius
     <div id="timer">0:00.0</div>
   </div>
   <p id="tip"></p>
+  <p id="learn"></p>
   <div id="info" aria-live="polite"></div>
   <div id="stage"></div>
   <div class="row"><button class="btn ghost sm" id="restart">Restart this comp</button></div>
@@ -190,6 +207,7 @@ const api={
 };
 function start(g){cleanupAll();cur=g;$('#home').hidden=true;$('#play').hidden=false;window.scrollTo(0,0);
   stage.innerHTML='';api.info('');$('#gname').textContent=(gauntlet?`${gauntlet.idx+1}/${gauntlet.list.length} · `:'')+g.name;$('#tip').textContent='Tip: '+g.tip;
+  const ln=$('#learn');ln.innerHTML='';const L=LEARN[g.id];if(L){ln.append('Learn it: ');L.forEach(([t,u],i)=>{const a=h('a','',t);a.href=u;a.target='_blank';a.rel='noopener';ln.append(a);if(i<L.length-1)ln.append(' · ')})}
   pen=0;t0=performance.now();running=true;tick();g.build(stage,api)}
 function home(){cleanupAll();gauntlet=null;$('#play').hidden=true;$('#home').hidden=false;renderHome();window.scrollTo(0,0)}
 function runGauntlet(){cleanupAll();gauntlet={list:shuffle([...G]).slice(0,4),idx:0,total:0};start(gauntlet.list[0])}
@@ -396,6 +414,26 @@ build(st,api){const size=Math.min(st.clientWidth||340,440),dpr=window.devicePixe
     x.fillStyle=cv('--muted');x.beginPath();x.moveTo(size/2-14,H);x.lineTo(size/2,H*.62+10);x.lineTo(size/2+14,H);x.fill();x.fillStyle=cv('--line');x.fillRect(0,H-6,size*(t/40),6)};
   api.loop(dt=>{t+=dt;const k=1+t/18;drift+=(Math.random()-.5)*dt*5*k;drift=Math.max(-1.4,Math.min(1.4,drift));v+=(pos*1.7*k+drift*.6+u*3.2)*dt;v*=.992;pos+=v*dt*.55;draw();
     api.info('Held '+t.toFixed(1)+'s of 40');if(Math.abs(pos)>1)api.fail('The ball fell after '+t.toFixed(1)+' seconds.');else if(t>=40)api.win()});draw()}});
+
+/* ---------- how-to links ---------- */
+const YT='Video: ';
+const MEM=[[YT+'build a memory palace','https://www.youtube.com/watch?v=tfyH-yXmbHw'],['Memory palace written guide','https://artofmemory.com/blog/how-to-build-a-memory-palace/']];
+const LEARN={
+ slide:[[YT+'solve the 15 puzzle with 2 tactics','https://www.youtube.com/watch?v=6uBl7WDVIic'],[YT+'method for any size slide puzzle','https://www.youtube.com/watch?v=P9Xib-dWlqU'],['Written step-by-step method','https://www.instructables.com/How-To-Solve-The-15-Puzzle/']],
+ jigsaw:[['Speed puzzling tips','https://www.speedpuzzling.com/tips.html'],['Ravensburger speed puzzling guide','https://www.ravensburger.us/en-US/discover/speed-puzzling']],
+ hanoi:[[YT+'Tower of Hanoi with five rings','https://www.youtube.com/watch?v=clh5vXF5ecI'],[YT+'easy solution and why it works','https://www.youtube.com/watch?v=5TrNxd7h_Cs']],
+ lights:[['Chase the lights tutorial + 5×5 lookup table','https://www.logicgamesonline.com/lightsout/tutorial.html'],['Lookup tables for every board size','https://steamcommunity.com/sharedfiles/filedetails/?id=1179995670']],
+ pipes:[['Guide: work from constrained pieces (overlap logic applies too)','https://freenonograms.com/beginners-guide']],
+ balls:[[YT+'ball sort tips and strategy','https://www.youtube.com/watch?v=P7dwYnAT9Hc'],['Seven ball sort habits','https://ballsortgame.com/ball-sort-tips/'],['Rachel LaMont on the Survivor ball-sort puzzle','https://parade.com/tv/rachel-lamont-top-5-survivor-puzzle-tips']],
+ sudoku:[['Beginner sudoku: scanning and naked singles','https://finalsudoku.com/blog/how-to-solve-easy-sudoku'],['Step-by-step beginner routine','https://sudoku-online-puzzles.com/blog/sudoku-strategies-for-beginners/']],
+ nono:[['Nonogram tutorial','https://www.thonky.com/nonograms/'],['Five beginner techniques','https://freenonograms.com/beginners-guide']],
+ simon:MEM,match:MEM,grid:MEM,order:MEM,count:MEM,
+ cipher:[['How to solve cryptograms step by step','https://www.thepuzzlelabs.com/cryptograms/how-to-solve-cryptograms'],['Common short-word patterns','https://tamarabveenstra.com/CryptologyTextbook/crytograms.html']],
+ code:[[YT+'two Mastermind strategies','https://www.youtube.com/watch?v=XX5TlB6xT3M'],['Mastermind strategy guide','https://www.geekyhobbies.com/mastermind-strategy-how-to-always-solve-the-hidden-secret-code/']],
+ math:[['10 mental math tricks','https://themindcompany.com/blog/10-mental-math-tricks'],[YT+'mental math tricks playlist','https://www.youtube.com/playlist?list=PLjIZBrecAfzIq4gDMM6VuOQCJ2daThw-t']],
+ scramble:[['Word shapes and common endings (cryptogram guide)','https://tamarabveenstra.com/CryptologyTextbook/crytograms.html']]
+};
+delete LEARN.pipes;
 
 /* ---------- home ---------- */
 function renderHome(){const wrap=$('#cats');wrap.innerHTML='';let done=0;
